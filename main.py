@@ -64,7 +64,8 @@ def get_video_comments(api, video_id, check_word):
 if __name__ == '__main__':
     load_dotenv()
     connected_api = pyyoutube.Api(api_key=os.getenv('API_KEY'))
-    channel_id = get_channel_id(connected_api, 'Диджитализируй')
+    channel_name = 'Диджитализируй'
+    channel_id = get_channel_id(connected_api, channel_name)
     channel_videos_ids = get_videos_ids(connected_api, channel_id)
     find_word = 'ментор'
     for video_id in channel_videos_ids:
