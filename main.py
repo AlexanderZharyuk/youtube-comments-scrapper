@@ -12,14 +12,13 @@ def get_channel_id(api, channel_username):
 
 
 def get_videos_ids(api, channel_id):
-    """Данный метод выдает 100 последних видео и их ID"""
     channel_activity = api.get_activities_by_channel(channel_id=channel_id, return_json=True, count=None)
     videos_ids = [video['contentDetails']['upload']['videoId'] for video in channel_activity['items']]
     return videos_ids
 
 
 def check_comment(string, find_word):
-    if string.lower().find(find_word) == -1:
+    if string.lower().find(find_word.lower()) == -1:
         return False
     return True
 
@@ -61,15 +60,23 @@ def get_video_comments(api, video_id, check_word):
             add_to_csv_data(video_info)
 
 
+def find_comments_by_username(api, username, word):
+    channel_id = get_channel_id(api, username)
+    find_comments_by_userid(api, channel_id, word)
+
+
+def find_comments_by_userid(api, user_id, word):
+    channel_videos_ids = get_videos_ids(api, user_id)
+    find_word = word
+    for video_id in channel_videos_ids:
+        get_video_comments(api, video_id, find_word)
+    generated_xlsx('comments_data.csv')
+    os.remove('comments_data.csv')
+
+
 if __name__ == '__main__':
     load_dotenv()
     connected_api = pyyoutube.Api(api_key=os.getenv('API_KEY'))
-    channel_name = 'Диджитализируй'
-    channel_id = get_channel_id(connected_api, channel_name)
-    channel_videos_ids = get_videos_ids(connected_api, channel_id)
-    find_word = 'ментор'
-    for video_id in channel_videos_ids:
-        get_video_comments(connected_api, video_id, find_word)
-
-    generated_xlsx('comments_data.csv')
-    os.remove('comments_data.csv')
+    find_comments_by_username(connected_api, 'channel_name', 'find_word')
+    # or you can use this, if channel have only channel id:
+    find_comments_by_userid(connected_api, 'channel_id', 'find_word')
