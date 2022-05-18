@@ -2,3 +2,4 @@
 .env
 .DS_Store
 matched_comments.xlsx
+.obsidian/
